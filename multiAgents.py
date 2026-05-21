@@ -243,40 +243,40 @@ def betterEvaluationFunction(currentGameState: GameState):
     Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
     evaluation function (question 5).
 
-    DESCRIPTION: <write something here so we know what you did>
+    DESCRIPTION: An evaluation function that aims to maximize the score and achieve it 
+    consistently. It rewards eating food pellets, prioritizes taking power capsules, 
+    aggressively hunts down scared ghosts, and keeps a safe distance from normal ghosts.
     """
     "*** YOUR CODE HERE ***"
     currentPos = currentGameState.getPacmanPosition()
-    currentFood = currentGameState.getFood()
+    currentFood = currentGameState.getFood().asList()
     currentGhostStates = currentGameState.getGhostStates()
     currentScaredTimes = [ghostState.scaredTimer for ghostState in currentGhostStates]
     currentCapsules = currentGameState.getCapsules()
 
     score = currentGameState.getScore()
 
-    foodDistances = [manhattanDistance(currentPos, food) for food in currentFood.asList()]
-    if foodDistances:
-        score += 1.0 / min(foodDistances)
+    if currentFood:
+        foodDistances = [manhattanDistance(currentPos, food) for food in currentFood]
+        score += 10.0 / min(foodDistances)
 
-    score -= 20 * len(currentFood.asList())
+    score -= 5 * len(currentFood)
+
+    if currentCapsules:
+        capsuleDistances = [manhattanDistance(currentPos, capsule) for capsule in currentCapsules]
+        score += 20.0 / min(capsuleDistances)
+
+    score -= 50 * len(currentCapsules)
 
     for ghost, timer in zip(currentGhostStates, currentScaredTimes):
         d = manhattanDistance(currentPos, ghost.getPosition())
         if timer > 0:
-            if d < timer:
-                score += 550 / (d + 1)
-            else:
-                score += 5.0 / (d + 1)
-            if d <= 1:
-                score += 1000
+            score += (200.0 / d) * (timer / (d + timer))
         else:
-            if d == 0:
-                score -= 1000
-            elif d <= 2:
-                score -= 500 / d
-    
-    if currentCapsules:
-        score += 10.0 / min(manhattanDistance(currentPos, capsule) for capsule in currentCapsules)
+            if d <= 1:
+                score -= 1e9
+            else:
+                score -= 5.0 / d
 
     return score
 
