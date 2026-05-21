@@ -321,7 +321,6 @@ def betterEvaluationFunction(currentGameState: GameState):
                 score -= 1e9
             else:
                 score -= 5.0 / d
-
     return score
 
 # Abbreviation
