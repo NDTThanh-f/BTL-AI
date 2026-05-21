@@ -226,7 +226,6 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                     return v
                 alpha = max(alpha, v)
             return v
-        
         else:
             v = float("inf")
             for action in legalActions:
